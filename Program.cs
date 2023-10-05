@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-
+using System.Xml.Linq;
 using Saxon.Api;
 
 namespace Saxon10CustomResolverTest1
@@ -27,7 +27,16 @@ namespace Saxon10CustomResolverTest1
 
             xsltTransformer.InitialContextNode = processor.NewDocumentBuilder().Build(new Uri(Path.Combine(Environment.CurrentDirectory, "dummy-input1.xml")));
 
-            xsltTransformer.Run(processor.NewSerializer(Console.Out));
+            var result = new XDocument();
+
+            using (var resultWriter = result.CreateWriter())
+            {
+
+                xsltTransformer.Run(new TextWriterDestination(resultWriter) { CloseAfterUse = true });
+
+            }
+
+            result.Save(Console.Out);
 
             Console.ReadLine();
         }
